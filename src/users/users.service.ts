@@ -6,35 +6,41 @@ import { CreateUserDto } from './dto/createUser.dto';
 
 @Injectable()
 export class UsersService {
-    constructor(
-        @InjectRepository(User)
-        private usersRepository: Repository<User>
-    ) { }
+  constructor(
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
+  ) {}
 
-    async getById(id: number) {
-        const user = await this.usersRepository.findOne({ id });
-        if (user) {
-            return user;
-        }
-        throw new HttpException('User with this id does not exist', HttpStatus.NOT_FOUND);
+  async getById(id: number) {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    if (user) {
+      return user;
     }
+    throw new HttpException(
+      'User with this id does not exist',
+      HttpStatus.NOT_FOUND,
+    );
+  }
 
-    async getByEmail(email: string) {
-        const user = await this.usersRepository.findOne({ email });
+  async getByEmail(email: string) {
+    const user = await this.usersRepository.findOne({ where: { email } });
 
-        console.log("user ", user);
+    console.log('user ', user);
 
-        if (user) {
-            return user;
-        }
-        throw new HttpException('User with this email does not exist', HttpStatus.NOT_FOUND);
+    if (user) {
+      return user;
     }
+    throw new HttpException(
+      'User with this email does not exist',
+      HttpStatus.NOT_FOUND,
+    );
+  }
 
-    async create(userData: CreateUserDto) {
-        console.log("userData ", userData);
+  async create(userData: CreateUserDto) {
+    console.log('userData ', userData);
 
-        const newUser = await this.usersRepository.create(userData);
-        await this.usersRepository.save(newUser);
-        return newUser;
-    }
+    const newUser = await this.usersRepository.create(userData);
+    await this.usersRepository.save(newUser);
+    return newUser;
+  }
 }
