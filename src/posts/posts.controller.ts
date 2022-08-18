@@ -19,6 +19,7 @@ export default class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
+  @UseGuards(JwtAuthenticationGuard)
   getAllPosts() {
     return this.postsService.getAllPosts();
   }

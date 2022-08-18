@@ -14,10 +14,14 @@ import RequestWithUser from './requestWithUser.interface';
 import { LocalAuthenticationGuard } from './localAuthentication.guard';
 import { Response } from 'express';
 import JwtAuthenticationGuard from './jwt-authentication.guard';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('authentication')
 export class AuthenticationController {
-  constructor(private readonly authenticationService: AuthenticationService) {}
+  constructor(
+    private readonly authenticationService: AuthenticationService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Post('register')
   async register(@Body() registrationData: RegisterDto) {
@@ -29,20 +33,13 @@ export class AuthenticationController {
   @Post('log-in')
   async logIn(@Req() request: RequestWithUser, @Res() response: Response) {
     const { user } = request;
-    const cookie = this.authenticationService.getCookieWithJwtToken(user.id);
-    response.setHeader('Set-Cookie', cookie);
+    const bearer = this.authenticationService.getBearerWithJwtToken(user.id);
     user.password = undefined;
-    return response.send(user);
-  }
-
-  @UseGuards(JwtAuthenticationGuard)
-  @Post('log-out')
-  async logOut(@Req() request: RequestWithUser, @Res() response: Response) {
-    response.setHeader(
-      'Set-Cookie',
-      this.authenticationService.getCookieForLogOut(),
-    );
-    return response.sendStatus(200);
+    return response.send({
+      ...user,
+      accessToken: bearer,
+      expiresIn: this.configService.get('JWT_EXPIRATION_TIME'),
+    });
   }
 
   @UseGuards(JwtAuthenticationGuard)
