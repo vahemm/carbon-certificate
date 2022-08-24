@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   Post,
   Req,
@@ -13,7 +12,6 @@ import { RegisterDto } from './dto/register.dto';
 import RequestWithUser from './requestWithUser.interface';
 import { LocalAuthenticationGuard } from './localAuthentication.guard';
 import { Response } from 'express';
-import JwtAuthenticationGuard from './jwt-authentication.guard';
 import { ConfigService } from '@nestjs/config';
 
 @Controller('authentication')
@@ -40,13 +38,5 @@ export class AuthenticationController {
       accessToken: bearer,
       expiresIn: this.configService.get('JWT_EXPIRATION_TIME'),
     });
-  }
-
-  @UseGuards(JwtAuthenticationGuard)
-  @Get()
-  authenticate(@Req() request: RequestWithUser) {
-    const user = request.user;
-    user.password = undefined;
-    return user;
   }
 }

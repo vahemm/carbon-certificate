@@ -13,7 +13,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         port: configService.get('POSTGRES_PORT'),
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
-        database: configService.get('POSTGRES_DB'),
+        database:
+          configService.get<string>('NODE_ENV') === 'test'
+            ? configService.get<string>('POSTGRES_TEST_DB')
+            : configService.get<string>('POSTGRES_DB'),
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         synchronize: true,
       }),

@@ -25,8 +25,6 @@ export class UsersService {
   async getByEmail(email: string) {
     const user = await this.usersRepository.findOne({ where: { email } });
 
-    console.log('user ', user);
-
     if (user) {
       return user;
     }
@@ -37,8 +35,6 @@ export class UsersService {
   }
 
   async create(userData: CreateUserDto) {
-    console.log('userData ', userData);
-
     const newUser = await this.usersRepository.create(userData);
     await this.usersRepository.save(newUser);
     return newUser;
